@@ -56,5 +56,16 @@ class AlunniController
     $response->getBody()->write("+1 KILL");
     return $response->withHeader("Content-type", "application/json")->withStatus(200);
   }
+  
+  //get con almeno tre lettere nome o cognome
+  public function search(Request $request, Response $response, $args){
+    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
+    $lettere = "'%". $args['lettere'] . "%'";
+    $result = $mysqli_connection->query("SELECT * FROM alunni WHERE (nome LIKE $lettere or cognome LIKE $lettere);");
+    $results = $result->fetch_all(MYSQLI_ASSOC);
+
+    $response->getBody()->write(json_encode($results));
+    return $response->withHeader("Content-type", "application/json")->withStatus(200);
+  }
 }
 ?>

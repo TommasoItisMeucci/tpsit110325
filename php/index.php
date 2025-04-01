@@ -11,7 +11,7 @@ $app->get('/alunni/{id:\d+}', "AlunniController:view");
 $app->post('/alunni', "AlunniController:create");
 $app->put('/alunni', "AlunniController:update");
 $app->delete('/alunni', "AlunniController:destroy");
-
+$app->get('/alunni/{lettere:\w+}', "AlunniController:search");
 
 $app->run();
 ?>
