@@ -6,11 +6,13 @@ class AlunniController
 {
   //get di tutti
   public function index(Request $request, Response $response, $args){
-    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
-    $result = $mysqli_connection->query("SELECT * FROM alunni");
-    $results = $result->fetch_all(MYSQLI_ASSOC);
+    //$mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
+    //$result = $mysqli_connection->query("SELECT * FROM alunni");
+    $db = Db::getInstance();
+    $result = $db->select("alunni");
+    //$results = $result->fetch_all(MYSQLI_ASSOC);
 
-    $response->getBody()->write(json_encode($results));
+    $response->getBody()->write(json_encode($result));
     return $response->withHeader("Content-type", "application/json")->withStatus(200);
   }
 
@@ -62,6 +64,35 @@ class AlunniController
     $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
     $lettere = "'%". $args['lettere'] . "%'";
     $result = $mysqli_connection->query("SELECT * FROM alunni WHERE (nome LIKE $lettere or cognome LIKE $lettere);");
+    $results = $result->fetch_all(MYSQLI_ASSOC);
+
+    $response->getBody()->write(json_encode($results));
+    return $response->withHeader("Content-type", "application/json")->withStatus(200);
+  }
+
+  public function sort(Request $request, Response $response, $args){
+    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
+    $lettere = "'%". $args['lettere'] . "%'";
+    $result = $mysqli_connection->query("describe alunni");
+    /*echo var_dump($result->fetch_all(MYSQLI_ASSOC));
+    exit();*/
+
+    $found = false;
+    $cols = $result->fetch_all(MYSQLI_ASSOC);
+
+    foreach($cols as $col){
+      if($col['Field'] == $args['col']){
+        $found = true;
+        break;
+      }
+    }
+
+    if(!$found){
+      $response->getBody()->write(json_encode(["msg" => "colonna non trovata"]));
+      return $response->withHeader("Content-type", "application/json")->withStatus(404);
+    }
+    /*$query = "SELECT * FROM alunni ORDER BY " . $args["col"] . " ASC";*/
+    $result = $mysqli_connection->query("SELECT * FROM alunni ORDER BY " . $args["col"] . " ASC");
     $results = $result->fetch_all(MYSQLI_ASSOC);
 
     $response->getBody()->write(json_encode($results));
