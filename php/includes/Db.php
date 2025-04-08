@@ -19,7 +19,7 @@
             if($result = $this->query($query)){
                 return $result->fetch_all(MYSQLI_ASSOC);
             }
-            return [];
+            return []; 
         }
     }
 
